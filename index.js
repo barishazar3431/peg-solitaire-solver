@@ -1,31 +1,10 @@
-const initialBoardState = [
-  [-1, -1, 1, 1, 1, -1, -1],
-  [-1, -1, 1, 1, 1, -1, -1],
-  [1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 0, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1],
-  [-1, -1, 1, 1, 1, -1, -1],
-  [-1, -1, 1, 1, 1, -1, -1],
-];
+import { DFS } from './Algorithms.js';
+import config from './config.js';
+import { GameState, Node } from './GameState.js';
 
-const getSlotLabel = (x, y) => {
-  if (initialBoardState[x][y] === -1) {
-    throw new Error('Illegal slot position!!');
-  }
+const initialGameState = new GameState(config.initialState);
+const root = new Node(initialGameState);
 
-  let sum = 0;
-  for (let i = 0; i < initialBoardState.length; i++) {
-    for (let j = 0; j < initialBoardState[0].length; j++) {
-      if (initialBoardState[i][j] !== -1) {
-        sum++;
-      }
-      if (i === x && j === y) {
-        return sum;
-      }
-    }
-  }
-
-  return sum;
-};
-
-console.log(getSlotLabel(3,3));
+console.time('DFS Time');
+DFS(root);
+console.timeEnd('DFS Time');
