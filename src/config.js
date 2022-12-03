@@ -17,6 +17,7 @@ const config = {
     [-1, -1, 0, 0, 0, -1, -1],
     [-1, -1, 0, 0, 0, -1, -1],
   ],
+  timeLimit: 10,
 };
 
 export default config;

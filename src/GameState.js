@@ -25,6 +25,21 @@ export class GameState {
     return sum;
   }
 
+  // getCoordinates(slotLabel) {
+  //   for (let i = 0; i < this.board.length; i++) {
+  //     for (let j = 0; j < this.board[i].length; j++) {
+  //       if (this.getSlotLabel(i, j) === slotLabel) {
+  //         return [i, j];
+  //       }
+  //     }
+  //   }
+  // }
+
+  // getFinalCoordinate(move) {
+  //   const moveArray = move.split(/(\s+)/);
+  //   return moveArray[moveArray.length -1];
+  // }
+
   isGameOver() {
     return this.getPossibleChildren().length === 0;
   }
@@ -37,8 +52,8 @@ export class GameState {
     const children = [];
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
-        const value = this.board[i][j];
-        if (value === 1) {
+        const currentPeg = this.board[i][j];
+        if (currentPeg === 1) {
           if (
             i < 5 &&
             this.board[i + 2][j] === 0 &&
@@ -53,7 +68,10 @@ export class GameState {
               i + 2,
               j
             )}`;
-            children.push(new Node(new GameState(newState), move));
+            const removedPeg = this.getSlotLabel(i + 1, j);
+            children.push(
+              new GameNode(new GameState(newState), move, removedPeg)
+            );
           }
 
           if (
@@ -70,7 +88,10 @@ export class GameState {
               i - 2,
               j
             )}`;
-            children.push(new Node(new GameState(newState), move));
+            const removedPeg = this.getSlotLabel(i - 1, j);
+            children.push(
+              new GameNode(new GameState(newState), move, removedPeg)
+            );
           }
 
           if (
@@ -87,7 +108,10 @@ export class GameState {
               i,
               j + 2
             )}`;
-            children.push(new Node(new GameState(newState), move));
+            const removedPeg = this.getSlotLabel(i, j + 1);
+            children.push(
+              new GameNode(new GameState(newState), move, removedPeg)
+            );
           }
 
           if (
@@ -104,7 +128,10 @@ export class GameState {
               i,
               j - 2
             )}`;
-            children.push(new Node(new GameState(newState), move));
+            const removedPeg = this.getSlotLabel(i, j - 1);
+            children.push(
+              new GameNode(new GameState(newState), move, removedPeg)
+            );
           }
         }
       }
@@ -126,11 +153,20 @@ export class GameState {
   }
 }
 
-export class Node {
-  constructor(gameState, move = 'Initial', parent = null, children = null) {
+export class GameNode {
+  constructor(
+    gameState,
+    move = 'Start',
+    removedPeg = 'None',
+    depth = 0,
+    parent = null,
+    children = null
+  ) {
     this.gameState = gameState;
     this.children = children;
     this.parent = parent;
-    this.move = move;
+    this.move = move; //The move which lead to this node (start => end)
+    this.removedPeg = removedPeg;
+    this.depth = depth;
   }
 }

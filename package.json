@@ -17,5 +17,8 @@
   },
   "homepage": "https://github.com/BarisHazar3431/Peg-Solitaire-Solver#readme",
   "type": "module",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@datastructures-js/priority-queue": "^6.1.4"
+  }
 }
