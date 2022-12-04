@@ -10,21 +10,29 @@ export const DFS = (rootNode) => {
       return -1;
     }
 
-    return a.removedPeg - b.removedPeg;
+    return a.gameState.removedPeg - b.gameState.removedPeg;
   });
   frontier.enqueue(rootNode);
 
-  const finalNode = traverseTree(frontier);
-  printPath(finalNode);
+  const [finalNode, explored] = traverseTree(frontier);
+  printPath(finalNode, explored);
 };
 
 export const BFS = (rootNode) => {
-  const frontier = [rootNode];
-  frontier.enqueue = frontier.push;
-  frontier.dequeue = frontier.shift;
+  const frontier = new PriorityQueue((a, b) => {
+    if (a.depth > b.depth) {
+      return 1;
+    }
+    if (a.depth < b.depth) {
+      return -1;
+    }
 
-  const finalNode = traverseTree(frontier);
-  printPath(finalNode);
+    return a.gameState.removedPeg - b.gameState.removedPeg;
+  });
+  frontier.enqueue(rootNode);
+
+  const [finalNode, explored] = traverseTree(frontier);
+  printPath(finalNode, explored);
 };
 
 export const randomDFS = (rootNode) => {
@@ -32,27 +40,11 @@ export const randomDFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const finalNode = traverseTree(frontier);
-  printPath(finalNode);
+  const [finalNode, explored] = traverseTree(frontier, { randomize: true });
+  printPath(finalNode, explored);
 };
 
-const printPath = (finalNode) => {
-  let iter = finalNode;
-  const nodes = [];
-  while (iter !== null) {
-    nodes.push(iter);
-    iter = iter.parent;
-  }
-
-  nodes.reverse().forEach((node) => {
-    console.log(node.gameState.move);
-    console.log('Removed:', node.gameState.removedPeg);
-    console.log('Depth: ', node.depth);
-    console.log(node.gameState.toString(), '\n\n');
-  });
-};
-
-const traverseTree = (frontier) => {
+const traverseTree = (frontier,  { randomize = false } = {}) => {
   const explored = new Set();
   let finalNode;
 
@@ -72,14 +64,40 @@ const traverseTree = (frontier) => {
       return new GameNode(child, exploredNode.depth + 1, exploredNode);
     });
     exploredNode.children = childrenNodes;
-
     explored.add(exploredNode);
-    exploredNode.children.forEach((child) => {
+
+    randomize && shuffleArray(childrenNodes);
+    childrenNodes.forEach((child) => {
       if (!explored.has(child)) {
         frontier.enqueue(child);
       }
     });
   }
 
-  return finalNode;
+  return [finalNode, explored];
 };
+
+function printPath(finalNode, explored) {
+  let iter = finalNode;
+  const nodes = [];
+  while (iter !== null) {
+    nodes.push(iter);
+    iter = iter.parent;
+  }
+
+  nodes.reverse().forEach((node) => {
+    console.log(node.gameState.move);
+    console.log('Removed:', node.gameState.removedPeg);
+    console.log('Depth: ', node.depth);
+    console.log(node.gameState.toString(), '\n\n');
+  });
+
+  console.log('Explored Nodes: ', explored.size);
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}

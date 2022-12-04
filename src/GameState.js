@@ -57,7 +57,7 @@ export class GameState {
         const currentPeg = this.board[i][j];
         if (currentPeg === 1) {
           if (
-            i < 5 &&
+            i < this.board.length - 2 &&
             this.board[i + 2][j] === 0 &&
             this.board[i + 1][j] === 1
           ) {
@@ -93,7 +93,7 @@ export class GameState {
           }
 
           if (
-            j < 5 &&
+            j < this.board[i].length - 2 &&
             this.board[i][j + 2] === 0 &&
             this.board[i][j + 1] === 1
           ) {
