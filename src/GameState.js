@@ -1,8 +1,10 @@
 import config from './config.js';
 
 export class GameState {
-  constructor(board) {
+  constructor(board, move = '', removedPeg = '') {
     this.board = board;
+    this.move = move;
+    this.removedPeg = removedPeg;
   }
 
   getSlotLabel(x, y) {
@@ -69,9 +71,7 @@ export class GameState {
               j
             )}`;
             const removedPeg = this.getSlotLabel(i + 1, j);
-            children.push(
-              new GameNode(new GameState(newState), move, removedPeg)
-            );
+            children.push(new GameState(newState, move, removedPeg));
           }
 
           if (
@@ -89,9 +89,7 @@ export class GameState {
               j
             )}`;
             const removedPeg = this.getSlotLabel(i - 1, j);
-            children.push(
-              new GameNode(new GameState(newState), move, removedPeg)
-            );
+            children.push(new GameState(newState, move, removedPeg));
           }
 
           if (
@@ -109,9 +107,7 @@ export class GameState {
               j + 2
             )}`;
             const removedPeg = this.getSlotLabel(i, j + 1);
-            children.push(
-              new GameNode(new GameState(newState), move, removedPeg)
-            );
+            children.push(new GameState(newState, move, removedPeg));
           }
 
           if (
@@ -129,9 +125,7 @@ export class GameState {
               j - 2
             )}`;
             const removedPeg = this.getSlotLabel(i, j - 1);
-            children.push(
-              new GameNode(new GameState(newState), move, removedPeg)
-            );
+            children.push(new GameState(newState, move, removedPeg));
           }
         }
       }
@@ -154,19 +148,10 @@ export class GameState {
 }
 
 export class GameNode {
-  constructor(
-    gameState,
-    move = 'Start',
-    removedPeg = 'None',
-    depth = 0,
-    parent = null,
-    children = null
-  ) {
+  constructor(gameState, depth = 0, parent = null, children = null) {
     this.gameState = gameState;
     this.children = children;
     this.parent = parent;
-    this.move = move; //The move which lead to this node (start => end)
-    this.removedPeg = removedPeg;
     this.depth = depth;
   }
 }

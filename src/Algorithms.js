@@ -1,4 +1,5 @@
 import { PriorityQueue } from '@datastructures-js/priority-queue';
+import { GameNode } from './GameState.js';
 
 export const DFS = (rootNode) => {
   const frontier = new PriorityQueue((a, b) => {
@@ -44,8 +45,8 @@ const printPath = (finalNode) => {
   }
 
   nodes.reverse().forEach((node) => {
-    console.log(node.move);
-    console.log('Removed:', node.removedPeg);
+    console.log(node.gameState.move);
+    console.log('Removed:', node.gameState.removedPeg);
     console.log('Depth: ', node.depth);
     console.log(node.gameState.toString(), '\n\n');
   });
@@ -66,12 +67,11 @@ const traverseTree = (frontier) => {
       break;
     }
 
-    const exploredChildren = exploredNode.gameState.getPossibleChildren();
-    exploredChildren.forEach((child) => {
-      child.parent = exploredNode;
-      child.depth = exploredNode.depth + 1;
+    const childrenStates = exploredNode.gameState.getPossibleChildren();
+    const childrenNodes = childrenStates.map((child) => {
+      return new GameNode(child, exploredNode.depth + 1, exploredNode);
     });
-    exploredNode.children = exploredChildren;
+    exploredNode.children = childrenNodes;
 
     explored.add(exploredNode);
     exploredNode.children.forEach((child) => {
