@@ -18,7 +18,6 @@ const config = {
     [-1, -1, 0, 0, 0, -1, -1],
   ],
 
-
   // initialState: [ Fireplace
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [-1, -1, 1, 1, 1, -1, -1],
@@ -28,7 +27,7 @@ const config = {
   //   [-1, -1, 0, 0, 0, -1, -1],
   //   [-1, -1, 0, 0, 0, -1, -1],
   // ],
-  timeLimit: 10,
+  timeLimitMinutes: 0.1,
 };
 
 export default config;

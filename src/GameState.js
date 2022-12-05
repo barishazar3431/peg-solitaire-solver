@@ -43,20 +43,17 @@ export class GameState {
     }
   }
 
-  getScore() {
-    const points = [
-      0, 0, 0, 1, 1, 1, 0, 1, 2, 2, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 2, 2,
-      1, 0, 1, 1, 1, 0, 0, 0,
-    ];
-    const destinationLabel = this.getDestinationLabel();
-    return points[destinationLabel - 1];
+  getRemainingPegs() {
+    let remainingPegs = 0;
+    for (let i = 0; i < this.board.length; i++) {
+      for (let j = 0; j < this.board[i].length; j++) {
+        if (this.board[i][j] === 1) {
+          remainingPegs++
+        } 
+      }
+    }
+    return remainingPegs;
   }
-
-  getDestinationLabel() {
-    const moveArray = this.move.split(/(\s+)/);
-    return moveArray[moveArray.length - 1];
-  }
-
   isGameOver() {
     return this.getChildrenStates().length === 0;
   }

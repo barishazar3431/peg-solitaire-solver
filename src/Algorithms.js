@@ -1,16 +1,14 @@
-import {
-  MinPriorityQueue,
-  PriorityQueue,
-} from '@datastructures-js/priority-queue';
+import config from './config.js';
 import { GameNode } from './GameState.js';
+import { timeLimitMinutes } from './index.js';
 
 export const DFS = (rootNode) => {
   const frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const [finalNode, explored] = traverseTree(frontier, { dfs: true });
-  printPath(finalNode, explored);
+  const { bestSolutionSoFar, explored } = traverseTree(frontier, { dfs: true });
+  printPath(bestSolutionSoFar, explored);
 };
 
 export const BFS = (rootNode) => {
@@ -20,46 +18,50 @@ export const BFS = (rootNode) => {
 
   frontier.enqueue(rootNode);
 
-  const [finalNode, explored] = traverseTree(frontier, { bfs: true });
-  printPath(finalNode, explored);
+  const { bestSolutionSoFar, explored } = traverseTree(frontier, { bfs: true });
+  printPath(bestSolutionSoFar, explored);
 };
 
-
-export const randomDFS = (rootNode) => {
+export const randomDFS = async (rootNode) => {
   const frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const [finalNode, explored] = traverseTree(frontier, { randomize: true });
-  printPath(finalNode, explored);
+  const { bestSolutionSoFar, explored } = traverseTree(frontier, {
+    randomize: true,
+  });
+  printPath(bestSolutionSoFar, explored);
 };
 
-export const heuristicDFS = (rootNode) => {
+export const heuristicDFS = async (rootNode) => {
   const frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const [finalNode, explored] = traverseTree(frontier, { heuristicDFS: true });
-  printPath(finalNode, explored);
+  const { bestSolutionSoFar, explored } = await traverseTree(frontier, {
+    heuristicDFS: true,
+  });
+  printPath(bestSolutionSoFar, explored);
 };
 
-const traverseTree = (
-  frontier,
-  { randomize = false, dfs = false, bfs = false, heuristicDFS = false } = {}
-) => {
-  let finalNode;
+const traverseTree = (frontier, options = {}) => {
   let explored = 0;
+  let bestSolutionSoFar = frontier[0];
 
+  const prevTime = Date.now();
+  const timeLimitInMinutes = timeLimitMinutes < 0 || isNaN(timeLimitMinutes) ? 60 : timeLimitMinutes;
   while (true) {
     const exploredNode = frontier.dequeue();
-    console.log(frontier.length);
     explored++;
-    if (exploredNode.gameState.isGameOver()) {
-      finalNode = exploredNode;
+
+    if (
+      exploredNode.gameState.isGameOver() &&
+      exploredNode.depth >= bestSolutionSoFar.depth
+    ) {
+      bestSolutionSoFar = exploredNode;
     }
 
-    if (exploredNode.gameState.isOptimal()) {
-      finalNode = exploredNode;
+    if (exploredNode.gameState.isOptimal() || Date.now() - prevTime >= timeLimitMinutes * 60 * 1000) {
       break;
     }
 
@@ -69,28 +71,30 @@ const traverseTree = (
     });
     exploredNode.children = childrenNodes;
 
-    !randomize &&
-      childrenNodes.sort((a, b) => {
-        if (bfs) {
-          return a.gameState.removedPeg - b.gameState.removedPeg;
-        }
+    childrenNodes.sort((a, b) => {
+      if (options.bfs) {
+        return a.gameState.removedPeg - b.gameState.removedPeg;
+      }
 
-        if (dfs) {
-          return b.gameState.removedPeg - a.gameState.removedPeg;
-        }
+      if (options.dfs) {
+        return b.gameState.removedPeg - a.gameState.removedPeg;
+      }
 
-        if (heuristicDFS) {
-          return b.gameState.getLonelyPegs() - a.gameState.getLonelyPegs();
-        }
-      });
+      if (options.heuristicDFS) {
+        return b.gameState.getLonelyPegs() - a.gameState.getLonelyPegs();
+      }
 
-    randomize && shuffleArray(childrenNodes);
+      if (options.randomize) {
+        return 0.5 - Math.random();
+      }
+    });
+
     childrenNodes.forEach((child) => {
       frontier.enqueue(child);
     });
   }
 
-  return [finalNode, explored];
+  return { bestSolutionSoFar, explored };
 };
 
 function printPath(finalNode, explored) {
@@ -101,19 +105,27 @@ function printPath(finalNode, explored) {
     iter = iter.parent;
   }
 
+  console.log('================================================');
+  if (finalNode.depth === 0) {
+    console.log('\n\nNo Solutions Found! (Time Limit Reached)');
+    return;
+  }
+
+  if (finalNode.gameState.isOptimal()) {
+    console.log('\n\nOptimum Solution Found!!');
+  } else {
+    const remainingPegs = finalNode.gameState.getRemainingPegs();
+    console.log(`\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`)
+  }
+
+
+  console.log('\n\n\n=== Board States Until the Solution. ===')
   nodes.reverse().forEach((node) => {
-    console.log(node.gameState.move);
+    console.log('Move: ', node.gameState.move);
     console.log('Removed:', node.gameState.removedPeg);
-    console.log('Depth: ', node.depth);
+    // console.log('Depth: ', node.depth);
     console.log(node.gameState.toString(), '\n\n');
   });
 
-  console.log('Explored Nodes: ', explored);
-}
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
+  console.log('Expanded Nodes: ', explored);
 }
