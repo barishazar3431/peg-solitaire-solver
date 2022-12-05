@@ -1,39 +1,29 @@
-import { PriorityQueue } from '@datastructures-js/priority-queue';
+import {
+  MinPriorityQueue,
+  PriorityQueue,
+} from '@datastructures-js/priority-queue';
 import { GameNode } from './GameState.js';
 
 export const DFS = (rootNode) => {
-  const frontier = new PriorityQueue((a, b) => {
-    if (a.depth < b.depth) {
-      return 1;
-    }
-    if (a.depth > b.depth) {
-      return -1;
-    }
+  const frontier = [rootNode];
+  frontier.enqueue = frontier.push;
+  frontier.dequeue = frontier.pop;
 
-    return a.gameState.removedPeg - b.gameState.removedPeg;
-  });
-  frontier.enqueue(rootNode);
-
-  const [finalNode, explored] = traverseTree(frontier);
+  const [finalNode, explored] = traverseTree(frontier, { dfs: true });
   printPath(finalNode, explored);
 };
 
 export const BFS = (rootNode) => {
-  const frontier = new PriorityQueue((a, b) => {
-    if (a.depth > b.depth) {
-      return 1;
-    }
-    if (a.depth < b.depth) {
-      return -1;
-    }
+  const frontier = [rootNode];
+  frontier.enqueue = frontier.push;
+  frontier.dequeue = frontier.shift;
 
-    return a.gameState.removedPeg - b.gameState.removedPeg;
-  });
   frontier.enqueue(rootNode);
 
-  const [finalNode, explored] = traverseTree(frontier);
+  const [finalNode, explored] = traverseTree(frontier, { bfs: true });
   printPath(finalNode, explored);
 };
+
 
 export const randomDFS = (rootNode) => {
   const frontier = [rootNode];
@@ -44,12 +34,26 @@ export const randomDFS = (rootNode) => {
   printPath(finalNode, explored);
 };
 
-const traverseTree = (frontier,  { randomize = false } = {}) => {
-  const explored = new Set();
+export const heuristicDFS = (rootNode) => {
+  const frontier = [rootNode];
+  frontier.enqueue = frontier.push;
+  frontier.dequeue = frontier.pop;
+
+  const [finalNode, explored] = traverseTree(frontier, { heuristicDFS: true });
+  printPath(finalNode, explored);
+};
+
+const traverseTree = (
+  frontier,
+  { randomize = false, dfs = false, bfs = false, heuristicDFS = false } = {}
+) => {
   let finalNode;
+  let explored = 0;
 
   while (true) {
     const exploredNode = frontier.dequeue();
+    console.log(frontier.length);
+    explored++;
     if (exploredNode.gameState.isGameOver()) {
       finalNode = exploredNode;
     }
@@ -59,18 +63,30 @@ const traverseTree = (frontier,  { randomize = false } = {}) => {
       break;
     }
 
-    const childrenStates = exploredNode.gameState.getPossibleChildren();
-    const childrenNodes = childrenStates.map((child) => {
-      return new GameNode(child, exploredNode.depth + 1, exploredNode);
+    const childrenStates = exploredNode.gameState.getChildrenStates();
+    const childrenNodes = childrenStates.map((childState) => {
+      return new GameNode(childState, exploredNode, exploredNode.depth + 1);
     });
     exploredNode.children = childrenNodes;
-    explored.add(exploredNode);
+
+    !randomize &&
+      childrenNodes.sort((a, b) => {
+        if (bfs) {
+          return a.gameState.removedPeg - b.gameState.removedPeg;
+        }
+
+        if (dfs) {
+          return b.gameState.removedPeg - a.gameState.removedPeg;
+        }
+
+        if (heuristicDFS) {
+          return b.gameState.getLonelyPegs() - a.gameState.getLonelyPegs();
+        }
+      });
 
     randomize && shuffleArray(childrenNodes);
     childrenNodes.forEach((child) => {
-      if (!explored.has(child)) {
-        frontier.enqueue(child);
-      }
+      frontier.enqueue(child);
     });
   }
 
@@ -92,7 +108,7 @@ function printPath(finalNode, explored) {
     console.log(node.gameState.toString(), '\n\n');
   });
 
-  console.log('Explored Nodes: ', explored.size);
+  console.log('Explored Nodes: ', explored);
 }
 
 function shuffleArray(array) {

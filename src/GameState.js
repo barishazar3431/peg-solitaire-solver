@@ -1,12 +1,11 @@
 import config from './config.js';
 
 export class GameState {
-  constructor(board, move = '', removedPeg = '') {
+  constructor(board, move = 'none', removedPeg = 'none') {
     this.board = board;
     this.move = move;
     this.removedPeg = removedPeg;
   }
-
   getSlotLabel(x, y) {
     if (this.board[x][y] === -1) {
       throw new Error('Illegal slot position!!');
@@ -27,30 +26,46 @@ export class GameState {
     return sum;
   }
 
-  // getCoordinates(slotLabel) {
-  //   for (let i = 0; i < this.board.length; i++) {
-  //     for (let j = 0; j < this.board[i].length; j++) {
-  //       if (this.getSlotLabel(i, j) === slotLabel) {
-  //         return [i, j];
-  //       }
-  //     }
-  //   }
-  // }
+  getLonelyPegs() {
+    let lonelyPegs = 0;
+    for (let i = 0; i < this.board.length; i++) {
+      for (let j = 0; j < this.board[i].length; j++) {
+        if (
+          this.board[i][j] === 1 &&
+          this.board[i + 1]?.[j] === 0 &&
+          this.board[i - 1]?.[j] === 0 &&
+          this.board[i]?.[j - 1] === 0 &&
+          this.board[i]?.[j + 1] === 0
+        ) {
+          lonelyPegs++;
+        }
+      }
+    }
+  }
 
-  // getFinalCoordinate(move) {
-  //   const moveArray = move.split(/(\s+)/);
-  //   return moveArray[moveArray.length -1];
-  // }
+  getScore() {
+    const points = [
+      0, 0, 0, 1, 1, 1, 0, 1, 2, 2, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 0, 1, 2, 2, 2,
+      1, 0, 1, 1, 1, 0, 0, 0,
+    ];
+    const destinationLabel = this.getDestinationLabel();
+    return points[destinationLabel - 1];
+  }
+
+  getDestinationLabel() {
+    const moveArray = this.move.split(/(\s+)/);
+    return moveArray[moveArray.length - 1];
+  }
 
   isGameOver() {
-    return this.getPossibleChildren().length === 0;
+    return this.getChildrenStates().length === 0;
   }
 
   isOptimal() {
     return JSON.stringify(this.board) === JSON.stringify(config.goalState);
   }
 
-  getPossibleChildren() {
+  getChildrenStates() {
     const children = [];
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
@@ -148,10 +163,10 @@ export class GameState {
 }
 
 export class GameNode {
-  constructor(gameState, depth = 0, parent = null, children = null) {
+  constructor(gameState, parent = null, depth = 0, children = []) {
     this.gameState = gameState;
-    this.children = children;
     this.parent = parent;
     this.depth = depth;
+    this.children = children;
   }
 }

@@ -1,13 +1,13 @@
-import { DFS, BFS, randomDFS } from './Algorithms.js';
+import { DFS, BFS, randomDFS, heuristicDFS } from './algorithms.js';
 import config from './config.js';
 import { GameState, GameNode } from './GameState.js';
 
 const initialGameState = new GameState(config.initialState);
 const root = new GameNode(initialGameState);
 
-console.time('DFS Time');
-DFS(root);
-console.timeEnd('DFS Time');
+// console.time('DFS Time');
+// DFS(root);
+// console.timeEnd('DFS Time');
 
 // console.time('Random DFS Time');
 // randomDFS(root);
@@ -17,4 +17,6 @@ console.timeEnd('DFS Time');
 // BFS(root);
 // console.timeEnd('BFS Time');
 
-// heuristicDFS(root);
+console.time('Heuristic Time');
+heuristicDFS(root);
+console.timeEnd('Heuristic Time');
