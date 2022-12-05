@@ -1,7 +1,8 @@
+import chalk from 'chalk';
 import config from './config.js';
 
 export class GameState {
-  constructor(board, move = 'none', removedPeg = 'none') {
+  constructor(board, move = [], removedPeg = []) {
     this.board = board; //Board represented by 2d array
     this.move = move; //Move which leads to this state
     this.removedPeg = removedPeg; //Last removed peg which led to this state
@@ -9,7 +10,7 @@ export class GameState {
 
   getSlotLabel(x, y) {
     if (this.board[x][y] === -1) {
-      throw new Error('Illegal slot position!!');
+      return -1;
     }
 
     let sum = 0;
@@ -60,6 +61,10 @@ export class GameState {
     return remainingPegs;
   }
 
+  getMoveString(move = this.move) {
+    return `${move[0]} => ${move[1]}`;
+  }
+
   isGameOver() {
     return this.getChildrenStates().length === 0;
   }
@@ -79,12 +84,12 @@ export class GameState {
       newState[i + iDirection][j + jDirection] = 0;
       newState[i + iDirection * 2][j + jDirection * 2] = 1;
 
-      const move = `${this.getSlotLabel(i, j)} => ${this.getSlotLabel(
-        i + 2 * iDirection,
-        j + 2 * jDirection
-      )}`;
+      const move = [
+        this.getSlotLabel(i, j),
+        this.getSlotLabel(i + 2 * iDirection, j + 2 * jDirection),
+      ];
 
-      const removedPeg = this.getSlotLabel(i + iDirection, j + jDirection);
+      const removedPeg = [i + iDirection, j + jDirection];
 
       childrenStates.push(new GameState(newState, move, removedPeg));
     }
@@ -103,15 +108,28 @@ export class GameState {
     return childrenStates;
   }
 
-  toString() {
+  toString(nextMove, nextRemoved) {
     let string = '';
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
         const value = this.board[i][j];
-        string += `${value === -1 ? ' ' : value}  `;
+        if (this.isGameOver() && value === 1) {
+          string += chalk.blue(value);
+        } else if (nextMove.indexOf(this.getSlotLabel(i, j)) !== -1) {
+          string += chalk.green(value);
+        } else if (nextRemoved[0] === i && nextRemoved[1] === j) {
+          string += chalk.red(value);
+        } else if (value === -1) {
+          string += ' ';
+        } else {
+          string += value;
+        }
+        string += ' ';
       }
       string += '\n';
     }
+    string +=
+      nextMove.length > 0 ? `\nMove: ${this.getMoveString(nextMove)}` : '';
 
     return string;
   }
