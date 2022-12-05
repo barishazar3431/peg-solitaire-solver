@@ -105,7 +105,7 @@ function printPath(finalNode, explored) {
     iter = iter.parent;
   }
 
-  console.log('\n\n\n================================================\n\n');
+  console.log('\n\n\n================================================\n');
   if (finalNode.depth === 0) {
     console.log('\n\nNo Solutions Found! (Time Limit Reached)');
     return;
@@ -120,17 +120,13 @@ function printPath(finalNode, explored) {
     );
   }
 
-  console.log('\n=== Board States Until the Solution. ===');
   console.timeEnd('Time Spent: ');
   console.log('Expanded Nodes: ', explored);
+  console.log('\n=== Board States Until the Solution. ===');
 
-  console.log('\n\n\n=== Board States Until the Solution. ===')
-  nodes.reverse().forEach((node) => {
-    console.log('Move: ', node.gameState.move);
-    console.log('Removed:', node.gameState.removedPeg);
-    // console.log('Depth: ', node.depth);
-    console.log(node.gameState.toString(), '\n\n');
+  nodes.reverse().forEach((node, i) => {
+    const lastMove = nodes[i + 1]?.gameState.move || [];
+    const lastRemoved = nodes[i + 1]?.gameState.removedPeg || [];
+    console.log(node.gameState.toString(lastMove, lastRemoved), '\n');
   });
-
-  console.log('Expanded Nodes: ', explored);
 }
