@@ -41,6 +41,7 @@ export class GameState {
         }
       }
     }
+    return lonelyPegs;
   }
 
   getRemainingPegs() {
