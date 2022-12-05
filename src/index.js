@@ -25,4 +25,4 @@ export const timeLimitMinutes = prompt('Enter Time Limit in Minutes: ');
 
 console.time('Time Spent: ');
 algorithms[algorithm](rootNode);
-console.timeEnd('Time Spent: ');
+

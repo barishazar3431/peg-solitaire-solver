@@ -1,4 +1,3 @@
-import config from './config.js';
 import { GameNode } from './GameState.js';
 import { timeLimitMinutes } from './index.js';
 
@@ -92,7 +91,6 @@ const traverseTree = (frontier, options = {}) => {
       frontier.enqueue(child);
     });
   }
-
   return { bestSolutionSoFar, explored };
 };
 
@@ -117,6 +115,8 @@ function printPath(finalNode, explored) {
     console.log(`\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`)
   }
 
+  console.timeEnd('Time Spent: ');
+  console.log('Expanded Nodes: ', explored);
 
   console.log('\n\n\n=== Board States Until the Solution. ===')
   nodes.reverse().forEach((node) => {
@@ -126,5 +126,4 @@ function printPath(finalNode, explored) {
     console.log(node.gameState.toString(), '\n\n');
   });
 
-  console.log('Expanded Nodes: ', explored);
 }
