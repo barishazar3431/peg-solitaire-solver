@@ -32,12 +32,12 @@ export const randomDFS = (rootNode) => {
   printPath(bestSolutionSoFar, explored);
 };
 
-export const heuristicDFS =  (rootNode) => {
+export const heuristicDFS = (rootNode) => {
   const frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const { bestSolutionSoFar, explored } =  traverseTree(frontier, {
+  const { bestSolutionSoFar, explored } = traverseTree(frontier, {
     heuristicDFS: true,
   });
   printPath(bestSolutionSoFar, explored);
@@ -59,7 +59,10 @@ const traverseTree = (frontier, options = {}) => {
       bestSolutionSoFar = exploredNode;
     }
 
-    if (exploredNode.gameState.isOptimal() || Date.now() - prevTime >= timeLimitMinutes * 60 * 1000) {
+    if (
+      exploredNode.gameState.isOptimal() ||
+      Date.now() - prevTime >= timeLimitMinutes * 60 * 1000
+    ) {
       break;
     }
 
@@ -102,7 +105,7 @@ function printPath(finalNode, explored) {
     iter = iter.parent;
   }
 
-  console.log('================================================');
+  console.log('\n\n\n================================================\n\n');
   if (finalNode.depth === 0) {
     console.log('\n\nNo Solutions Found! (Time Limit Reached)');
     return;
@@ -112,9 +115,12 @@ function printPath(finalNode, explored) {
     console.log('\n\nOptimum Solution Found!!');
   } else {
     const remainingPegs = finalNode.gameState.getRemainingPegs();
-    console.log(`\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`)
+    console.log(
+      `\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`
+    );
   }
 
+  console.log('\n=== Board States Until the Solution. ===');
   console.timeEnd('Time Spent: ');
   console.log('Expanded Nodes: ', explored);
 
@@ -126,4 +132,5 @@ function printPath(finalNode, explored) {
     console.log(node.gameState.toString(), '\n\n');
   });
 
+  console.log('Expanded Nodes: ', explored);
 }
