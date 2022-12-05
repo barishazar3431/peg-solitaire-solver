@@ -22,7 +22,7 @@ export const BFS = (rootNode) => {
   printPath(bestSolutionSoFar, explored);
 };
 
-export const randomDFS = async (rootNode) => {
+export const randomDFS = (rootNode) => {
   const frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
@@ -33,12 +33,12 @@ export const randomDFS = async (rootNode) => {
   printPath(bestSolutionSoFar, explored);
 };
 
-export const heuristicDFS = async (rootNode) => {
+export const heuristicDFS =  (rootNode) => {
   const frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const { bestSolutionSoFar, explored } = await traverseTree(frontier, {
+  const { bestSolutionSoFar, explored } =  traverseTree(frontier, {
     heuristicDFS: true,
   });
   printPath(bestSolutionSoFar, explored);
@@ -49,7 +49,6 @@ const traverseTree = (frontier, options = {}) => {
   let bestSolutionSoFar = frontier[0];
 
   const prevTime = Date.now();
-  const timeLimitInMinutes = timeLimitMinutes < 0 || isNaN(timeLimitMinutes) ? 60 : timeLimitMinutes;
   while (true) {
     const exploredNode = frontier.dequeue();
     explored++;

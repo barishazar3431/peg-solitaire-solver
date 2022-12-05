@@ -18,7 +18,7 @@ const config = {
     [-1, -1, 0, 0, 0, -1, -1],
   ],
 
-  // initialState: [ Fireplace
+  // initialState: [ // FirePlace Variant
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [0, 0, 1, 1, 1, 0, 0],
