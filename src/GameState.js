@@ -2,10 +2,11 @@ import config from './config.js';
 
 export class GameState {
   constructor(board, move = 'none', removedPeg = 'none') {
-    this.board = board;
-    this.move = move;
-    this.removedPeg = removedPeg;
+    this.board = board; //Board represented by 2d array
+    this.move = move; //Move which leads to this state
+    this.removedPeg = removedPeg; //Last removed peg which led to this state
   }
+
   getSlotLabel(x, y) {
     if (this.board[x][y] === -1) {
       throw new Error('Illegal slot position!!');
@@ -22,10 +23,13 @@ export class GameState {
         }
       }
     }
-
     return sum;
   }
 
+  /**
+   * Returns the total number of lonely pegs(pegs which don't have any neighborhood peg)
+   * @returns number of lonely pegs
+   */
   getLonelyPegs() {
     let lonelyPegs = 0;
     for (let i = 0; i < this.board.length; i++) {
@@ -49,12 +53,13 @@ export class GameState {
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
         if (this.board[i][j] === 1) {
-          remainingPegs++
-        } 
+          remainingPegs++;
+        }
       }
     }
     return remainingPegs;
   }
+
   isGameOver() {
     return this.getChildrenStates().length === 0;
   }
@@ -63,87 +68,39 @@ export class GameState {
     return JSON.stringify(this.board) === JSON.stringify(config.goalState);
   }
 
+  addChildState(childrenStates, i, j, iDirection, jDirection) {
+    if (
+      this.board[i][j] === 1 &&
+      this.board[i + iDirection]?.[j + jDirection] === 1 &&
+      this.board[i + iDirection * 2]?.[j + jDirection * 2] === 0
+    ) {
+      const newState = this.board.map((row) => row.slice());
+      newState[i][j] = 0;
+      newState[i + iDirection][j + jDirection] = 0;
+      newState[i + iDirection * 2][j + jDirection * 2] = 1;
+
+      const move = `${this.getSlotLabel(i, j)} => ${this.getSlotLabel(
+        i + 2 * iDirection,
+        j + 2 * jDirection
+      )}`;
+
+      const removedPeg = this.getSlotLabel(i + iDirection, j + jDirection);
+
+      childrenStates.push(new GameState(newState, move, removedPeg));
+    }
+  }
+
   getChildrenStates() {
-    const children = [];
+    const childrenStates = [];
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
-        const currentPeg = this.board[i][j];
-        if (currentPeg === 1) {
-          if (
-            i < this.board.length - 2 &&
-            this.board[i + 2][j] === 0 &&
-            this.board[i + 1][j] === 1
-          ) {
-            const newState = this.board.map((row) => row.slice());
-            newState[i][j] = 0;
-            newState[i + 1][j] = 0;
-            newState[i + 2][j] = 1;
-
-            const move = `${this.getSlotLabel(i, j)} => ${this.getSlotLabel(
-              i + 2,
-              j
-            )}`;
-            const removedPeg = this.getSlotLabel(i + 1, j);
-            children.push(new GameState(newState, move, removedPeg));
-          }
-
-          if (
-            i > 1 &&
-            this.board[i - 2][j] === 0 &&
-            this.board[i - 1][j] === 1
-          ) {
-            const newState = this.board.map((row) => row.slice());
-            newState[i][j] = 0;
-            newState[i - 1][j] = 0;
-            newState[i - 2][j] = 1;
-
-            const move = `${this.getSlotLabel(i, j)} => ${this.getSlotLabel(
-              i - 2,
-              j
-            )}`;
-            const removedPeg = this.getSlotLabel(i - 1, j);
-            children.push(new GameState(newState, move, removedPeg));
-          }
-
-          if (
-            j < this.board[i].length - 2 &&
-            this.board[i][j + 2] === 0 &&
-            this.board[i][j + 1] === 1
-          ) {
-            const newState = this.board.map((row) => row.slice());
-            newState[i][j] = 0;
-            newState[i][j + 1] = 0;
-            newState[i][j + 2] = 1;
-
-            const move = `${this.getSlotLabel(i, j)} => ${this.getSlotLabel(
-              i,
-              j + 2
-            )}`;
-            const removedPeg = this.getSlotLabel(i, j + 1);
-            children.push(new GameState(newState, move, removedPeg));
-          }
-
-          if (
-            j > 1 &&
-            this.board[i][j - 2] === 0 &&
-            this.board[i][j - 1] === 1
-          ) {
-            const newState = this.board.map((row) => row.slice());
-            newState[i][j] = 0;
-            newState[i][j - 1] = 0;
-            newState[i][j - 2] = 1;
-
-            const move = `${this.getSlotLabel(i, j)} => ${this.getSlotLabel(
-              i,
-              j - 2
-            )}`;
-            const removedPeg = this.getSlotLabel(i, j - 1);
-            children.push(new GameState(newState, move, removedPeg));
-          }
-        }
+        this.addChildState(childrenStates, i, j, 0, 1); //Check for right move
+        this.addChildState(childrenStates, i, j, 0, -1); // Left move
+        this.addChildState(childrenStates, i, j, -1, 0); // Up move
+        this.addChildState(childrenStates, i, j, 1, 0); // Down move
       }
     }
-    return children;
+    return childrenStates;
   }
 
   toString() {
