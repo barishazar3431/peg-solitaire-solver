@@ -27,7 +27,7 @@ export class GameState {
   }
 
   /**
-   * Returns the total number of lonely pegs(pegs which don't have any neighborhood peg)
+   * Returns the total number of lonely pegs(pegs which don't have any neighboring peg)
    * @returns number of lonely pegs
    */
   getLonelyPegs() {
