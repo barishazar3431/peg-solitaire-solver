@@ -95,6 +95,10 @@ export class GameState {
     }
   }
 
+  getRemovedPeg() {
+    return this.getSlotLabel(this.removedPeg[0], this.removedPeg[1]);
+  }
+
   getChildrenStates() {
     const childrenStates = [];
     for (let i = 0; i < this.board.length; i++) {

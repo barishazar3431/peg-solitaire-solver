@@ -74,11 +74,11 @@ const traverseTree = (frontier, options = {}) => {
 
     childrenNodes.sort((a, b) => {
       if (options.bfs) {
-        return a.gameState.removedPeg - b.gameState.removedPeg;
+        return a.gameState.getRemovedPeg() - b.gameState.getRemovedPeg();
       }
 
       if (options.dfs) {
-        return b.gameState.removedPeg - a.gameState.removedPeg;
+        return b.gameState.getRemovedPeg() - a.gameState.getRemovedPeg();
       }
 
       if (options.heuristicDFS) {
