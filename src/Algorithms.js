@@ -6,8 +6,9 @@ export const DFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const { bestSolutionSoFar, explored } = traverseTree(frontier, { dfs: true });
-  printPath(bestSolutionSoFar, explored);
+  const sortFunction = (a, b) =>
+    b.gameState.getRemovedPeg() - a.gameState.getRemovedPeg();
+  traverseTree(frontier, sortFunction);
 };
 
 export const BFS = (rootNode) => {
@@ -15,10 +16,9 @@ export const BFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.shift;
 
-  frontier.enqueue(rootNode);
-
-  const { bestSolutionSoFar, explored } = traverseTree(frontier, { bfs: true });
-  printPath(bestSolutionSoFar, explored);
+  const sortFunction = (a, b) =>
+    a.gameState.getRemovedPeg() - b.gameState.getRemovedPeg();
+  traverseTree(frontier, sortFunction);
 };
 
 export const randomDFS = (rootNode) => {
@@ -26,10 +26,8 @@ export const randomDFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const { bestSolutionSoFar, explored } = traverseTree(frontier, {
-    randomize: true,
-  });
-  printPath(bestSolutionSoFar, explored);
+  const sortFunction = (a, b) => Math.random() - 0.5; //It sorts randomly (shuffles)
+  traverseTree(frontier, sortFunction);
 };
 
 export const heuristicDFS = (rootNode) => {
@@ -37,20 +35,20 @@ export const heuristicDFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const { bestSolutionSoFar, explored } = traverseTree(frontier, {
-    heuristicDFS: true,
-  });
-  printPath(bestSolutionSoFar, explored);
+  const sortFunction = (a, b) => {
+    return b.gameState.getNumOfLonelyPegs() - a.gameState.getNumOfLonelyPegs();
+  };
+  traverseTree(frontier, sortFunction);
 };
 
-const traverseTree = (frontier, options = {}) => {
-  let explored = 0;
+const traverseTree = (frontier, sortFunction = () => 0) => {
+  let numOfExpandedNodes = 0;
   let bestSolutionSoFar = frontier[0];
 
   const prevTime = Date.now();
   while (true) {
     const exploredNode = frontier.dequeue();
-    explored++;
+    numOfExpandedNodes++;
 
     if (
       exploredNode.gameState.isGameOver() &&
@@ -72,32 +70,16 @@ const traverseTree = (frontier, options = {}) => {
     });
     exploredNode.children = childrenNodes;
 
-    childrenNodes.sort((a, b) => {
-      if (options.bfs) {
-        return a.gameState.getRemovedPeg() - b.gameState.getRemovedPeg();
-      }
-
-      if (options.dfs) {
-        return b.gameState.getRemovedPeg() - a.gameState.getRemovedPeg();
-      }
-
-      if (options.heuristicDFS) {
-        return b.gameState.getLonelyPegs() - a.gameState.getLonelyPegs();
-      }
-
-      if (options.randomize) {
-        return 0.5 - Math.random();
-      }
-    });
-
+    childrenNodes.sort(sortFunction); //Sort the children nodes according to given sort function
     childrenNodes.forEach((child) => {
       frontier.enqueue(child);
     });
   }
-  return { bestSolutionSoFar, explored };
+
+  printPath(bestSolutionSoFar, numOfExpandedNodes);
 };
 
-function printPath(finalNode, explored) {
+function printPath(finalNode, numOfExpandedNodes) {
   let iter = finalNode;
   const nodes = [];
   while (iter !== null) {
@@ -114,14 +96,14 @@ function printPath(finalNode, explored) {
   if (finalNode.gameState.isOptimal()) {
     console.log('\n\nOptimum Solution Found!!');
   } else {
-    const remainingPegs = finalNode.gameState.getRemainingPegs();
+    const remainingPegs = finalNode.gameState.getNumOfRemainingPegs();
     console.log(
       `\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`
     );
   }
 
   console.timeEnd('Time Spent: ');
-  console.log('Expanded Nodes: ', explored);
+  console.log('Expanded Nodes: ', numOfExpandedNodes);
   console.log('\n=== Board States Until the Solution. ===');
 
   nodes.reverse().forEach((node, i) => {

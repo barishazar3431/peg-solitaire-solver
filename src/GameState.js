@@ -8,8 +8,8 @@ export class GameState {
     this.removedPeg = removedPeg; //Last removed peg which led to this state
   }
 
-  getSlotLabel(x, y) {
-    if (this.board[x][y] === -1) {
+  getSlotLabel(row, col) {
+    if (this.board[row][col] === -1) {
       return -1;
     }
 
@@ -19,7 +19,7 @@ export class GameState {
         if (this.board[i][j] !== -1) {
           sum++;
         }
-        if (i === x && j === y) {
+        if (i === row && j === col) {
           return sum;
         }
       }
@@ -31,7 +31,7 @@ export class GameState {
    * Returns the total number of lonely pegs(pegs which don't have any neighboring peg)
    * @returns number of lonely pegs
    */
-  getLonelyPegs() {
+  getNumOfLonelyPegs() {
     let lonelyPegs = 0;
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
@@ -49,7 +49,7 @@ export class GameState {
     return lonelyPegs;
   }
 
-  getRemainingPegs() {
+  getNumOfRemainingPegs() {
     let remainingPegs = 0;
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
@@ -105,15 +105,17 @@ export class GameState {
       for (let j = 0; j < this.board[i].length; j++) {
         this.addChildState(childrenStates, i, j, 0, 1); //Check for right move
         this.addChildState(childrenStates, i, j, 0, -1); // Left move
-        this.addChildState(childrenStates, i, j, -1, 0); // Up move
         this.addChildState(childrenStates, i, j, 1, 0); // Down move
+        this.addChildState(childrenStates, i, j, -1, 0); // Up move
       }
     }
     return childrenStates;
   }
 
   toString(nextMove, nextRemoved) {
-    let string = '';
+    let string =
+      nextMove.length > 0 ? `\nMove: ${this.getMoveString(nextMove)}\n\n` : '\n' ;
+
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
         const value = this.board[i][j];
@@ -132,8 +134,6 @@ export class GameState {
       }
       string += '\n';
     }
-    string +=
-      nextMove.length > 0 ? `\nMove: ${this.getMoveString(nextMove)}` : '';
 
     return string;
   }

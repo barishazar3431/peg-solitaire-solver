@@ -19,7 +19,8 @@ const config = {
     [-1, -1, 0, 0, 0, -1, -1],
   ],
 
-  // initialState: [  //FirePlace Arrangement
+  // initialState: [
+  //   //FirePlace Arrangement
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [0, 0, 1, 1, 1, 0, 0],
@@ -29,7 +30,8 @@ const config = {
   //   [-1, -1, 0, 0, 0, -1, -1],
   // ],
 
-  // initialState: [ //Diamond Arrangement
+  // initialState: [
+  //   //Diamond Arrangement
   //   [-1, -1, 0, 1, 0, -1, -1],
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [0, 1, 1, 1, 1, 1, 0],
@@ -50,7 +52,8 @@ const config = {
   //   [-1, -1, 0, 0, 0, -1, -1],
   // ],
 
-  // initialState: [ //European Arrangement
+  // initialState: [
+  //   //European Arrangement
   //   [-1, -1, 1, 1, 1, -1, -1],
   //   [-1, 1, 1, 1, 1, 1, -1],
   //   [1, 1, 1, 0, 1, 1, 1],
