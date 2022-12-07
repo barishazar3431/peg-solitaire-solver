@@ -36,10 +36,14 @@ export const heuristicDFS = (rootNode) => {
   frontier.dequeue = frontier.pop;
 
   const sortFunction = (a, b) => {
-    return b.gameState.getNumOfLonelyPegs() - a.gameState.getNumOfLonelyPegs();
+    return b.gameState.getWeightedScore() - a.gameState.getWeightedScore();
   };
   traverseTree(frontier, sortFunction);
 };
+
+// export const IDS(rootNode) {
+
+// }
 
 const traverseTree = (frontier, sortFunction = () => 0) => {
   let numOfExpandedNodes = 0;
@@ -55,6 +59,7 @@ const traverseTree = (frontier, sortFunction = () => 0) => {
       exploredNode.depth >= bestSolutionSoFar.depth
     ) {
       bestSolutionSoFar = exploredNode;
+      // break;
     }
 
     if (
@@ -68,7 +73,6 @@ const traverseTree = (frontier, sortFunction = () => 0) => {
     const childrenNodes = childrenStates.map((childState) => {
       return new GameNode(childState, exploredNode, exploredNode.depth + 1);
     });
-    exploredNode.children = childrenNodes;
 
     childrenNodes.sort(sortFunction); //Sort the children nodes according to given sort function
     childrenNodes.forEach((child) => {
@@ -111,4 +115,15 @@ function printPath(finalNode, numOfExpandedNodes) {
     const lastRemoved = nodes[i + 1]?.gameState.removedPeg || [];
     console.log(node.gameState.toString(lastMove, lastRemoved), '\n');
   });
+}
+
+export function euclideanDistance(x1, y1, x2, y2) {
+  const a = x1 - x2;
+  const b = y1 - y2;
+
+  return Math.sqrt(a * a + b * b);
+}
+
+export function manhattanDistance(x1, y1, x2, y2) {
+  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 }
