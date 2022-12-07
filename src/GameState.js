@@ -2,11 +2,13 @@ import chalk from 'chalk';
 import { euclideanDistance, manhattanDistance } from './Algorithms.js';
 import config from './config.js';
 
-export class GameState {
-  constructor(board, move = [], removedPeg = []) {
+export default class GameState {
+  constructor(board, move = [], removedPeg = [], parent = null, depth = 0) {
     this.board = board; //Board represented by 2d array
     this.move = move; //Move which leads to this state [fromLabel, destLabel]
     this.removedPeg = removedPeg; //Last removed peg which led to this state
+    this.parent = parent;
+    this.depth = depth;
   }
 
   getSlotLabel(row, col) {
@@ -33,7 +35,7 @@ export class GameState {
       for (let j = 0; j < this.board[i].length; j++) {
         if (this.getSlotLabel(i, j) === slotLabel) {
           return [i, j];
-        } 
+        }
       }
     }
   }
@@ -41,6 +43,30 @@ export class GameState {
   getDestinationCoordinate() {
     const destinationLabel = this.getSlotLabel(this.move[1]);
     return this.getCoordinate(destinationLabel);
+  }
+
+  getPegScore() {
+    const coordinates = [
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [2, 0],
+      [3, 0],
+      [4, 0],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [2, 6],
+      [3, 6],
+      [4, 6],
+    ];
+    let count = 0;
+    for (const coordinate of coordinates) {
+      if (this.board[coordinate[0]][coordinate[1]] === 1) {
+        count++;
+      }
+    }
+    return count;
   }
 
   getNumOfLonelyPegs() {
@@ -60,7 +86,7 @@ export class GameState {
       this.board[i + 1]?.[j] === 1 ||
       this.board[i - 1]?.[j] === 1 ||
       this.board[i]?.[j - 1] === 1 ||
-      this.board[i]?.[j + 1] === 1 
+      this.board[i]?.[j + 1] === 1
     );
   }
 
@@ -122,7 +148,9 @@ export class GameState {
 
       const removedPeg = [i + iDirection, j + jDirection];
 
-      childrenStates.push(new GameState(newState, move, removedPeg));
+      childrenStates.push(
+        new GameState(newState, move, removedPeg, this, this.depth + 1)
+      );
     }
   }
 
@@ -181,10 +209,3 @@ export class GameState {
   }
 }
 
-export class GameNode {
-  constructor(gameState, parent = null, depth = 0 ) {
-    this.gameState = gameState;
-    this.parent = parent;
-    this.depth = depth;
-  }
-}

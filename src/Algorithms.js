@@ -1,4 +1,3 @@
-import { GameNode } from './GameState.js';
 import { timeLimitMinutes } from './index.js';
 
 export const DFS = (rootNode) => {
@@ -7,7 +6,7 @@ export const DFS = (rootNode) => {
   frontier.dequeue = frontier.pop;
 
   const sortFunction = (a, b) =>
-    b.gameState.getRemovedPeg() - a.gameState.getRemovedPeg();
+    b.getRemovedPeg() - a.getRemovedPeg();
   traverseTree(frontier, sortFunction);
 };
 
@@ -17,7 +16,7 @@ export const BFS = (rootNode) => {
   frontier.dequeue = frontier.shift;
 
   const sortFunction = (a, b) =>
-    a.gameState.getRemovedPeg() - b.gameState.getRemovedPeg();
+    a.getRemovedPeg() - b.getRemovedPeg();
   traverseTree(frontier, sortFunction);
 };
 
@@ -36,7 +35,14 @@ export const heuristicDFS = (rootNode) => {
   frontier.dequeue = frontier.pop;
 
   const sortFunction = (a, b) => {
-    return b.gameState.getWeightedScore() - a.gameState.getWeightedScore();
+    if (b.getWeightedScore() > a.getWeightedScore()) {
+      return 1;
+    }
+    if (b.getWeightedScore() < a.getWeightedScore()) {
+      return -1;
+    }
+
+    return a.getChildrenCount() - b.getChildrenCount();
   };
   traverseTree(frontier, sortFunction);
 };
@@ -55,7 +61,7 @@ const traverseTree = (frontier, sortFunction = () => 0) => {
     numOfExpandedNodes++;
 
     if (
-      exploredNode.gameState.isGameOver() &&
+      exploredNode.isGameOver() &&
       exploredNode.depth >= bestSolutionSoFar.depth
     ) {
       bestSolutionSoFar = exploredNode;
@@ -63,19 +69,17 @@ const traverseTree = (frontier, sortFunction = () => 0) => {
     }
 
     if (
-      exploredNode.gameState.isOptimal() ||
+      exploredNode.isOptimal() ||
       Date.now() - prevTime >= timeLimitMinutes * 60 * 1000
     ) {
       break;
     }
 
-    const childrenStates = exploredNode.gameState.getChildrenStates();
-    const childrenNodes = childrenStates.map((childState) => {
-      return new GameNode(childState, exploredNode, exploredNode.depth + 1);
-    });
+    const childrenStates = exploredNode.getChildrenStates();
+  
 
-    childrenNodes.sort(sortFunction); //Sort the children nodes according to given sort function
-    childrenNodes.forEach((child) => {
+    childrenStates.sort(sortFunction); //Sort the children nodes according to given sort function
+    childrenStates.forEach((child) => {
       frontier.enqueue(child);
     });
   }
@@ -97,10 +101,10 @@ function printPath(finalNode, numOfExpandedNodes) {
     return;
   }
 
-  if (finalNode.gameState.isOptimal()) {
+  if (finalNode.isOptimal()) {
     console.log('\n\nOptimum Solution Found!!');
   } else {
-    const remainingPegs = finalNode.gameState.getNumOfRemainingPegs();
+    const remainingPegs = finalNode.getNumOfRemainingPegs();
     console.log(
       `\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`
     );
@@ -111,9 +115,9 @@ function printPath(finalNode, numOfExpandedNodes) {
   console.log('\n=== Board States Until the Solution. ===');
 
   nodes.reverse().forEach((node, i) => {
-    const lastMove = nodes[i + 1]?.gameState.move || [];
-    const lastRemoved = nodes[i + 1]?.gameState.removedPeg || [];
-    console.log(node.gameState.toString(lastMove, lastRemoved), '\n');
+    const lastMove = nodes[i + 1]?.move || [];
+    const lastRemoved = nodes[i + 1]?.removedPeg || [];
+    console.log(node.toString(lastMove, lastRemoved), '\n');
   });
 }
 

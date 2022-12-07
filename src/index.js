@@ -1,11 +1,10 @@
 import { DFS, BFS, randomDFS, heuristicDFS } from './algorithms.js';
 import config from './config.js';
-import { GameState, GameNode } from './GameState.js';
+import  GameState  from './GameState.js';
 import promptSync from 'prompt-sync';
 const prompt = promptSync();
 
 const initialGameState = new GameState(config.initialState);
-const rootNode = new GameNode(initialGameState);
 
 const algorithms = {
   1: BFS,
@@ -24,7 +23,7 @@ export const timeLimitMinutes = prompt('Enter Time Limit in Minutes: ');
 
 
 console.time('Time Spent: ');
-algorithms[algorithm](rootNode);
+algorithms[algorithm](initialGameState);
 
 
 
