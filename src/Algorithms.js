@@ -5,8 +5,7 @@ export const DFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
 
-  const sortFunction = (a, b) =>
-    b.getRemovedPeg() - a.getRemovedPeg();
+  const sortFunction = (a, b) => b.getRemovedPeg() - a.getRemovedPeg();
   traverseTree(frontier, sortFunction);
 };
 
@@ -15,8 +14,7 @@ export const BFS = (rootNode) => {
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.shift;
 
-  const sortFunction = (a, b) =>
-    a.getRemovedPeg() - b.getRemovedPeg();
+  const sortFunction = (a, b) => a.getRemovedPeg() - b.getRemovedPeg();
   traverseTree(frontier, sortFunction);
 };
 
@@ -35,6 +33,13 @@ export const heuristicDFS = (rootNode) => {
   frontier.dequeue = frontier.pop;
 
   const sortFunction = (a, b) => {
+    if (b.getPegScore() > a.getPegScore()) {
+      return 1;
+    }
+    if (b.getPegScore() < a.getPegScore()) {
+      return -1;
+    }
+
     if (b.getWeightedScore() > a.getWeightedScore()) {
       return 1;
     }
@@ -42,7 +47,14 @@ export const heuristicDFS = (rootNode) => {
       return -1;
     }
 
-    return a.getChildrenCount() - b.getChildrenCount();
+    if (b.getNumOfRemainingPegs() < a.getNumOfRemainingPegs()) {
+      return 1;
+    }
+    if (b.getNumOfRemainingPegs() > a.getNumOfRemainingPegs()) {
+      return -1;
+    }
+
+    return 0;
   };
   traverseTree(frontier, sortFunction);
 };
@@ -76,7 +88,6 @@ const traverseTree = (frontier, sortFunction = () => 0) => {
     }
 
     const childrenStates = exploredNode.getChildrenStates();
-  
 
     childrenStates.sort(sortFunction); //Sort the children nodes according to given sort function
     childrenStates.forEach((child) => {
