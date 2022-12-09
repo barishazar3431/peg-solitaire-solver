@@ -9,7 +9,7 @@ const initialGameState = new GameState(config.initialState);
 const algorithms = {
   1: BFS,
   2: DFS,
-  3: IDS, // Iterative Deepening
+  3: IDS,
   4: randomDFS,
   5: heuristicDFS,
 };

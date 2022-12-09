@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { euclideanDistance, manhattanDistance } from './Algorithms.js';
+import { euclideanDistance } from './util.js';
 import config from './config.js';
 
 export default class GameState {
@@ -40,62 +40,16 @@ export default class GameState {
     }
   }
 
-  getDestinationCoordinate() {
-    const destinationLabel = this.getSlotLabel(this.move[1]);
-    return this.getCoordinate(destinationLabel);
-  }
-
-  getPegScore() {
-    const coordinates = [
-      [0, 2],
-      [0, 3],
-      [0, 4],
-      [2, 0],
-      [3, 0],
-      [4, 0],
-      [6, 2],
-      [6, 3],
-      [6, 4],
-      [2, 6],
-      [3, 6],
-      [4, 6],
-    ];
-    let count = 0;
-    for (const coordinate of coordinates) {
-      if (this.board[coordinate[0]][coordinate[1]] === 1) {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  getNumOfLonelyPegs() {
-    let lonelyPegs = 0;
-    for (let i = 0; i < this.board.length; i++) {
-      for (let j = 0; j < this.board[i].length; j++) {
-        if (this.board[i][j] === 1 && !this.hasOrthogonalNeighbor(i, j)) {
-          lonelyPegs++;
-        }
-      }
-    }
-    return lonelyPegs;
-  }
-
-  hasOrthogonalNeighbor(i, j) {
-    return (
-      this.board[i + 1]?.[j] === 1 ||
-      this.board[i - 1]?.[j] === 1 ||
-      this.board[i]?.[j - 1] === 1 ||
-      this.board[i]?.[j + 1] === 1
-    );
-  }
-
   getWeightedScore() {
     let score = 0;
+
+    const iMiddle = Math.floor(this.board.length / 2);
+    const jMiddle = Math.floor(this.board[0].length / 2);
+
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
         if (this.board[i][j] == 1) {
-          score += manhattanDistance(i, j, 3, 3);
+          score += euclideanDistance(i, j, iMiddle, jMiddle);
         }
       }
     }
@@ -171,10 +125,6 @@ export default class GameState {
         directions.forEach((dir) =>
           this.addChildState(childrenStates, i, j, dir[0], dir[1])
         );
-        // this.addChildState(childrenStates, i, j, 0, 1); //Check for right move
-        // this.addChildState(childrenStates, i, j, 0, -1); // Left move
-        // this.addChildState(childrenStates, i, j, 1, 0); // Down move
-        // this.addChildState(childrenStates, i, j, -1, 0); // Up move
       }
     }
     return childrenStates;
@@ -208,4 +158,3 @@ export default class GameState {
     return string;
   }
 }
-
