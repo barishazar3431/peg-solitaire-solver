@@ -1,4 +1,4 @@
-import { DFS, BFS, randomDFS, heuristicDFS } from './algorithms.js';
+import { DFS, BFS, randomDFS, heuristicDFS, IDS } from './algorithms.js';
 import config from './config.js';
 import  GameState  from './GameState.js';
 import promptSync from 'prompt-sync';
@@ -9,7 +9,7 @@ const initialGameState = new GameState(config.initialState);
 const algorithms = {
   1: BFS,
   2: DFS,
-  3: () => {}, // Iterative Deepening
+  3: IDS, // Iterative Deepening
   4: randomDFS,
   5: heuristicDFS,
 };
