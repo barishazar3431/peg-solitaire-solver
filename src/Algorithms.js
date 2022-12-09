@@ -59,18 +59,39 @@ export const heuristicDFS = (rootNode) => {
   traverseTree(frontier, sortFunction);
 };
 
-// export const IDS(rootNode) {
+export const IDS = rootNode => {
+  let frontier = [rootNode];
+  frontier.enqueue = frontier.push;
+  frontier.dequeue = frontier.pop;
+  let solution = [], depthLimit = 0
+  const sortFunction = (a, b) => b.getRemovedPeg() - a.getRemovedPeg();
+  const startingTime = Date.now();
+  
+  while(true){
+    solution = traverseTree(frontier, sortFunction, true, startingTime, depthLimit)
+    frontier = [rootNode];
+    frontier.enqueue = frontier.push;
+    frontier.dequeue = frontier.pop;
+    depthLimit++;
+    if(Date.now() - startingTime >= timeLimitMinutes * 60 * 1000)
+      break
+  }
+  printPath(solution[0], solution[1]);
+}
 
-// }
-
-const traverseTree = (frontier, sortFunction = () => 0) => {
+const traverseTree = (frontier, sortFunction = () => 0, iterativeDfs = false, startingTime, depthLimit) => {
   let numOfExpandedNodes = 0;
   let bestSolutionSoFar = frontier[0];
-
-  const prevTime = Date.now();
+  let prevTime = Date.now()
+  
+  if(iterativeDfs) prevTime = startingTime
+  
   while (true) {
     const exploredNode = frontier.dequeue();
     numOfExpandedNodes++;
+    let childrenStates = []
+    
+    if(iterativeDfs && exploredNode == undefined) break;
 
     if (
       exploredNode.isGameOver() &&
@@ -87,15 +108,17 @@ const traverseTree = (frontier, sortFunction = () => 0) => {
       break;
     }
 
-    const childrenStates = exploredNode.getChildrenStates();
+    if(!iterativeDfs || exploredNode.depth < depthLimit)
+     childrenStates = exploredNode.getChildrenStates();
 
     childrenStates.sort(sortFunction); //Sort the children nodes according to given sort function
     childrenStates.forEach((child) => {
       frontier.enqueue(child);
     });
   }
-
+  if(!iterativeDfs)
   printPath(bestSolutionSoFar, numOfExpandedNodes);
+  else return [bestSolutionSoFar, numOfExpandedNodes]
 };
 
 function printPath(finalNode, numOfExpandedNodes) {
