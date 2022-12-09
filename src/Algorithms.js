@@ -57,13 +57,13 @@ export const IDS = (rootNode) => {
   let frontier = [rootNode];
   frontier.enqueue = frontier.push;
   frontier.dequeue = frontier.pop;
-  let solution = [],
+  let finalNode = null, numOfExpandedNodes = 0, maxNodesInFrontier = 0,
     depthLimit = 0;
   const sortFunction = (a, b) => b.getRemovedPeg() - a.getRemovedPeg();
   const startingTime = Date.now();
 
   while (true) {
-    solution = traverseTree(
+    [finalNode, numOfExpandedNodes, maxNodesInFrontier] = traverseTree(
       frontier,
       sortFunction,
       true,
@@ -74,7 +74,7 @@ export const IDS = (rootNode) => {
     frontier.enqueue = frontier.push;
     frontier.dequeue = frontier.pop;
     depthLimit++;
-    if (Date.now() - startingTime >= timeLimitMinutes * 60 * 1000) break;
+    if (Date.now() - startingTime >= timeLimitMinutes * 60 * 1000 || finalNode.isOptimal()) break;
   }
-  printPath(solution[0], solution[1]);
+  printPath(finalNode, numOfExpandedNodes, maxNodesInFrontier);
 };

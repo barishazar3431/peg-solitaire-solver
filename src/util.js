@@ -10,10 +10,14 @@ export const traverseTree = (
   let numOfExpandedNodes = 0;
   let bestSolutionSoFar = frontier[0];
   let prevTime = Date.now();
+  let maxNodesInFrontier = 0;
 
   if (iterativeDfs) prevTime = startingTime;
 
   while (true) {
+    if (frontier.length > maxNodesInFrontier) {
+      maxNodesInFrontier = frontier.length;
+    }
     const exploredNode = frontier.dequeue();
     numOfExpandedNodes++;
     let childrenStates = [];
@@ -25,7 +29,6 @@ export const traverseTree = (
       exploredNode.depth >= bestSolutionSoFar.depth
     ) {
       bestSolutionSoFar = exploredNode;
-      // break;
     }
 
     if (
@@ -43,11 +46,11 @@ export const traverseTree = (
       frontier.enqueue(child);
     });
   }
-  if (!iterativeDfs) printPath(bestSolutionSoFar, numOfExpandedNodes);
-  else return [bestSolutionSoFar, numOfExpandedNodes];
+  if (!iterativeDfs) printPath(bestSolutionSoFar, numOfExpandedNodes, maxNodesInFrontier);
+  else return [bestSolutionSoFar, numOfExpandedNodes, maxNodesInFrontier];
 };
 
-export const printPath = (finalNode, numOfExpandedNodes) => {
+export const printPath = (finalNode, numOfExpandedNodes, maxNodesInFrontier) => {
   let iter = finalNode;
   const nodes = [];
   while (iter !== null) {
@@ -72,6 +75,7 @@ export const printPath = (finalNode, numOfExpandedNodes) => {
 
   console.timeEnd('Time Spent: ');
   console.log('Expanded Nodes: ', numOfExpandedNodes);
+  console.log('Max Number of Nodes Stored in Memory:', maxNodesInFrontier);
   console.log('\n=== Board States Until the Solution. ===');
 
   nodes.reverse().forEach((node, i) => {
