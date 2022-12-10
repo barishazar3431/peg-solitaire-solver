@@ -22,8 +22,9 @@ const algorithm = prompt('Choose 1-5: ');
 export const timeLimitMinutes = prompt('Enter Time Limit in Minutes: ');
 
 
-console.time('Time Spent: ');
-algorithms[algorithm](initialGameState);
 
+console.log('\n\n\n================================================\n');
+console.log('\nAlgorithm: ', algorithms[algorithm].name);
+algorithms[algorithm](initialGameState);
 
 

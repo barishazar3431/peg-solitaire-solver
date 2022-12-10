@@ -7,6 +7,7 @@ export const traverseTree = (
   startingTime,
   depthLimit
 ) => {
+  !iterativeDfs && console.time('Time Spent');
   let numOfExpandedNodes = 0;
   let bestSolutionSoFar = frontier[0];
   let prevTime = Date.now();
@@ -46,11 +47,19 @@ export const traverseTree = (
       frontier.enqueue(child);
     });
   }
-  if (!iterativeDfs) printPath(bestSolutionSoFar, numOfExpandedNodes, maxNodesInFrontier);
-  else return [bestSolutionSoFar, numOfExpandedNodes, maxNodesInFrontier];
+  if (!iterativeDfs) {
+    console.timeEnd('Time Spent');
+    printPath(bestSolutionSoFar, numOfExpandedNodes, maxNodesInFrontier);
+  } else {
+    return [bestSolutionSoFar, numOfExpandedNodes, maxNodesInFrontier];
+  }
 };
 
-export const printPath = (finalNode, numOfExpandedNodes, maxNodesInFrontier) => {
+export const printPath = (
+  finalNode,
+  numOfExpandedNodes,
+  maxNodesInFrontier
+) => {
   let iter = finalNode;
   const nodes = [];
   while (iter !== null) {
@@ -58,22 +67,20 @@ export const printPath = (finalNode, numOfExpandedNodes, maxNodesInFrontier) => 
     iter = iter.parent;
   }
 
-  console.log('\n\n\n================================================\n');
   if (finalNode.depth === 0) {
-    console.log('\n\nNo Solutions Found! (Time Limit Reached)');
+    console.log('Message: No Solutions Found! (Time Limit Reached)');
     return;
   }
 
   if (finalNode.isOptimal()) {
-    console.log('\n\nOptimum Solution Found!!');
+    console.log('Message: Optimum Solution Found!!');
   } else {
     const remainingPegs = finalNode.getNumOfRemainingPegs();
     console.log(
-      `\n\nSub-optimum Solution Found With ${remainingPegs} Remaining Pegs`
+      `Message: Sub-optimum Solution Found With ${remainingPegs} Remaining Pegs`
     );
   }
 
-  console.timeEnd('Time Spent: ');
   console.log('Expanded Nodes: ', numOfExpandedNodes);
   console.log('Max Number of Nodes Stored in Memory:', maxNodesInFrontier);
   console.log('\n=== Board States Until the Solution. ===');
