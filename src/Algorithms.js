@@ -66,13 +66,27 @@ export const IDS = (rootNode) => {
 
   console.time('Time Spent');
   while (true) {
-    [finalNode, numOfExpandedNodes, maxNodesInFrontier] = traverseTree(
+    let currentSolutionNode=null, currentMaxExpandedNodes=0, currentMaxNodesInFrontier=0;
+    [currentSolutionNode, currentMaxExpandedNodes, currentMaxNodesInFrontier] = traverseTree(
       frontier,
       sortFunction,
       true,
       startingTime,
       depthLimit
     );
+
+      if(currentSolutionNode != null && finalNode==null){
+        finalNode = currentSolutionNode;
+      }
+      if(finalNode!=null && currentSolutionNode.depth > finalNode.depth){
+        finalNode = currentSolutionNode;
+      }
+      if(currentMaxNodesInFrontier> maxNodesInFrontier){
+        maxNodesInFrontier = currentMaxNodesInFrontier
+      }
+
+      numOfExpandedNodes += currentMaxExpandedNodes
+
     frontier = [rootNode];
     frontier.enqueue = frontier.push;
     frontier.dequeue = frontier.pop;
