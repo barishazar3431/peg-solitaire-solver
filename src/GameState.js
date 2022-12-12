@@ -6,9 +6,9 @@ export default class GameState {
   constructor(board, move = [], removedPeg = [], parent = null, depth = 0) {
     this.board = board; //Board represented by 2d array
     this.move = move; //Move which leads to this state [fromLabel, destLabel]
-    this.removedPeg = removedPeg; //Last removed peg which led to this state
-    this.parent = parent;
-    this.depth = depth;
+    this.removedPeg = removedPeg; //Last removed peg before this state
+    this.parent = parent; //Immediate parent of this current state.
+    this.depth = depth; //Depth of this state in the tree
   }
 
   getSlotLabel(row, col) {
@@ -133,7 +133,7 @@ export default class GameState {
   toString(nextMove, nextRemoved) {
     let string =
       nextMove.length > 0
-        ? `\nMove: ${this.getMoveString(nextMove)}\n\n`
+        ? `\nMove #${this.depth + 1}: ${this.getMoveString(nextMove)}\n\n`
         : '\n';
 
     for (let i = 0; i < this.board.length; i++) {

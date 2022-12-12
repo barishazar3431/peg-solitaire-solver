@@ -19,7 +19,7 @@ export const traverseTree = (
     if (frontier.length > maxNodesInFrontier) {
       maxNodesInFrontier = frontier.length;
     }
-    const exploredNode = frontier.dequeue();
+    const exploredNode = frontier.remove();
     numOfExpandedNodes++;
     let childrenStates = [];
 
@@ -44,7 +44,7 @@ export const traverseTree = (
 
     childrenStates.sort(sortFunction); //Sort the children nodes according to given sort function
     childrenStates.forEach((child) => {
-      frontier.enqueue(child);
+      frontier.add(child);
     });
   }
   if (!iterativeDfs) {
