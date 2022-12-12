@@ -1,6 +1,6 @@
 import { DFS, BFS, randomDFS, heuristicDFS, IDS } from './algorithms.js';
 import config from './config.js';
-import  GameState  from './GameState.js';
+import GameState from './GameState.js';
 import promptSync from 'prompt-sync';
 const prompt = promptSync();
 
@@ -14,17 +14,17 @@ const algorithms = {
   5: heuristicDFS,
 };
 
-console.log(
-  '\n\nChoose algorithm: \n1 - Breadth First Search\n2 - Depth-First Search\n3 - Iterative Deepening Search\n4 - Depth-First Search With Random Selection\n5 - Depth-First Search With a Node Selection Heuristic\n'
-);
+console.log(`\n\n
+Choose algorithm:
+1 - Breadth-First Search
+2 - Depth-First Search
+3 - Iterative Deepening Search
+4 - Depth-First Search With Random Selection
+5 - Depth-First Search With a Node Selection Heuristic\n`);
 
 const algorithm = prompt('Choose 1-5: ');
 export const timeLimitMinutes = prompt('Enter Time Limit in Minutes: ');
 
-
-
 console.log('\n\n\n================================================\n');
 console.log('\nAlgorithm: ', algorithms[algorithm].name);
 algorithms[algorithm](initialGameState);
-
-
