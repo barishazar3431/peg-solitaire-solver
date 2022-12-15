@@ -41,8 +41,7 @@ export const heuristicDFS = (rootNode) => {
       return -1;
     }
 
-    return b.getWeightedScore() - a.getWeightedScore()
-
+    return b.getWeightedScore() - a.getWeightedScore();
   };
   traverseTree(frontier, sortFunction);
 };
@@ -60,26 +59,26 @@ export const IDS = (rootNode) => {
 
   console.time('Time Spent');
   while (true) {
-    let currentSolutionNode=null, currentMaxExpandedNodes=0, currentMaxNodesInFrontier=0;
-    [currentSolutionNode, currentMaxExpandedNodes, currentMaxNodesInFrontier] = traverseTree(
-      frontier,
-      sortFunction,
-      true,
-      startingTime,
-      depthLimit
-    );
+    let currentSolutionNode = null,
+      currentNumOfExpandedNodes = 0,
+      currentMaxNodesInFrontier = 0;
+    [
+      currentSolutionNode,
+      currentNumOfExpandedNodes,
+      currentMaxNodesInFrontier,
+    ] = traverseTree(frontier, sortFunction, true, startingTime, depthLimit);
 
-      if(currentSolutionNode != null && finalNode==null){
-        finalNode = currentSolutionNode;
-      }
-      if(finalNode!=null && currentSolutionNode.depth > finalNode.depth){
-        finalNode = currentSolutionNode;
-      }
-      if(currentMaxNodesInFrontier> maxNodesInFrontier){
-        maxNodesInFrontier = currentMaxNodesInFrontier
-      }
+    if (currentSolutionNode != null && finalNode == null) {
+      finalNode = currentSolutionNode;
+    }
+    if (finalNode != null && currentSolutionNode.depth > finalNode.depth) {
+      finalNode = currentSolutionNode;
+    }
+    if (currentMaxNodesInFrontier > maxNodesInFrontier) {
+      maxNodesInFrontier = currentMaxNodesInFrontier;
+    }
 
-      numOfExpandedNodes += currentMaxExpandedNodes
+    numOfExpandedNodes += currentNumOfExpandedNodes;
 
     frontier = [rootNode];
     frontier.add = frontier.push;
