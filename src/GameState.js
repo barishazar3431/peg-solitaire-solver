@@ -11,6 +11,7 @@ export default class GameState {
     this.depth = depth; //Depth of this state in the tree
   }
 
+  //Takes row and column and returns the label of the slot
   getSlotLabel(row, col) {
     if (this.board[row]?.[col] === -1) {
       return -1;
@@ -30,6 +31,7 @@ export default class GameState {
     return sum;
   }
 
+  //Inverse of getSlotLabel
   getCoordinate(slotLabel) {
     for (let i = 0; i < this.board.length; i++) {
       for (let j = 0; j < this.board[i].length; j++) {
@@ -40,6 +42,7 @@ export default class GameState {
     }
   }
 
+  //Calculates the weighted score for the board (Sum of all euclidean distances from each peg to the center peg)
   getWeightedScore() {
     let score = 0;
 
@@ -56,6 +59,7 @@ export default class GameState {
     return score;
   }
 
+  //Returns the remaining pegs
   getNumOfRemainingPegs() {
     let remainingPegs = 0;
     for (let i = 0; i < this.board.length; i++) {
@@ -68,6 +72,7 @@ export default class GameState {
     return remainingPegs;
   }
 
+  //Yields a string representation of given move array
   getMoveString(move = this.move) {
     return `${move[0]} => ${move[1]}`;
   }
@@ -79,11 +84,14 @@ export default class GameState {
   isGameOver() {
     return this.getChildrenCount() === 0;
   }
-
+  //Whether current board is identical to the goal state
   isOptimal() {
     return JSON.stringify(this.board) === JSON.stringify(config.goalState);
   }
 
+  /*Takes an array of children nodes and a peg position and the direction
+  of the move. And pushes the new gameState instance to the array if there 
+  is a valid move in the given direction*/
   addChildState(childrenStates, i, j, iDirection, jDirection) {
     if (
       this.board[i][j] === 1 &&
@@ -107,11 +115,11 @@ export default class GameState {
       );
     }
   }
-
+  //Returns the slotLabel of the removedPeg using its coordinates
   getRemovedPeg() {
     return this.getSlotLabel(this.removedPeg[0], this.removedPeg[1]);
   }
-
+  //Returns the array which contains all children states of current gameState instance
   getChildrenStates() {
     const childrenStates = [];
     for (let i = 0; i < this.board.length; i++) {
@@ -129,7 +137,7 @@ export default class GameState {
     }
     return childrenStates;
   }
-
+  //Returns the string representation of current gamestate
   toString(nextMove, nextRemoved) {
     let string =
       nextMove.length > 0

@@ -35,13 +35,14 @@ export const heuristicDFS = (rootNode) => {
 
   const sortFunction = (a, b) => {
     if (b.getChildrenCount() < a.getChildrenCount()) {
+      //First, choose the node which yields more childs
       return 1;
     }
     if (b.getChildrenCount() > a.getChildrenCount()) {
       return -1;
     }
 
-    return b.getWeightedScore() - a.getWeightedScore();
+    return b.getWeightedScore() - a.getWeightedScore(); //If equal, then choose the one which has least weighted score
   };
   traverseTree(frontier, sortFunction);
 };
