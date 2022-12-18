@@ -13,7 +13,7 @@ To run the program, make sure you have Node.js installed.
 After installing Node.js 
 
 ```
-git clone https://github.com/barishazar3431/Peg-Solitaire-Solver.git
+git clone https://github.com/barishazar3431/peg-solitaire-solver.git
 
 cd Peg-Solitaire-Solver/
 
