@@ -2,9 +2,9 @@
 
 ## Description
 
-This project was implemented as part of CSE 4082 - Introduction to Artificial Intelligence course at Marmara University. It was implemented with Javascript Language.
+This project was done as part of the CSE 4082 - Introduction to Artificial Intelligence course at Marmara University (Instructor: Ali Haydar Özer). It was implemented with Javascript Language.
 
-It solves English Peg Solitaire by using several uninformed searching algorithms, to be able to understand their nature. (More info can be seen in Project Description File under Project Files directory).
+It solves the English Peg Solitaire by using several uninformed searching algorithms to be able to understand their nature. (More info can be seen in Project Description File under Project Files directory).
 ___ 
 
 ## Usage
